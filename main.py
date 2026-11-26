@@ -4,6 +4,7 @@ import argparse
 
 from tasks.task1_coin_removal import _run_demo as run_task1_demo
 from tasks.task2_domino_tiling import _run_demo as run_task2_demo
+from tasks.task5_round_table import _run_demo as run_task5_demo
 
 
 def main() -> None:
@@ -13,7 +14,7 @@ def main() -> None:
     parser.add_argument(
         "--task",
         type=int,
-        choices=[1, 2],
+        choices=[1, 2, 5],
         help="Run a specific task (omit to run all implemented tasks).",
     )
     args = parser.parse_args()
@@ -21,6 +22,7 @@ def main() -> None:
     runners = {
         1: run_task1_demo,
         2: run_task2_demo,
+        5: run_task5_demo,
     }
 
     if args.task is not None:
