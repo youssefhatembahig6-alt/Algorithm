@@ -45,21 +45,21 @@ Algorithm/
   - Space: `O(n^2)`
 
 ### Task 5 — King Arthur's Round Table (`Dynamic Programming`)
-- **Function:** `seatKnights(n: int, friends: Sequence[Sequence[bool]]) -> list[int]`
+- **Function:** `seatKnights(n: int, friends: list[list[bool]]) -> list[int]`
 - **File:** `tasks/task5_round_table.py`
 - **Graph-Theoretic Characterization:**
   - Finding a valid circular seating where adjacent knights are friends is equivalent to finding a **Hamiltonian Cycle** in the undirected friendship graph $G = (V, E)$.
-  - **Dirac's Theorem (1952):** In any simple undirected graph with $n \ge 3$ vertices, if every vertex has degree $\ge n / 2$, the graph contains a Hamiltonian cycle. Hence, a valid seating is mathematically guaranteed to exist.
+  - **Dirac's Theorem (1952):** In any simple undirected graph with $n \ge 3$ vertices, if every vertex has degree $\ge n / 2$, the graph contains a Hamiltonian cycle. Under this condition, a valid circular seating is guaranteed to exist.
 - **Dynamic Programming Strategy:**
   - Uses the **Bellman-Held-Karp bitmask DP** algorithm:
-    - Fix knight 0 as starting vertex.
-    - State: $DP[mask][u]$ indicates whether there exists a simple path starting at knight 0 visiting the subset of knights `mask` and ending at knight $u$.
-    - Transitions: From endpoint $u$ in `mask`, transition to an unvisited friend $v$ by setting bit $v$ in `mask | (1 << v)`.
-    - Closing cycle: In the full mask $(2^n - 1)$, find an endpoint $u$ adjacent to knight 0, and reconstruct the circular seating backwards in $O(n^2)$ time.
-  - For $n > 20$, an $O(n^2)$ constructive Dirac path-extension fallback is provided to handle large inputs without running out of memory.
+    - Fix knight 0 as starting vertex to eliminate rotational symmetry.
+    - State: `dp[mask][u]` is `True` if there is a path starting at knight 0 visiting the subset of knights `mask` and ending at knight `u`.
+    - Parent: `parent[mask][u]` tracks the predecessor knight to reconstruct the seating order.
+    - Transitions: From endpoint `u` in `mask`, extend to an unvisited friend `v` (`friends[u][v] == True`), updating `dp[mask | (1 << v)][v] = True` and `parent[mask | (1 << v)][v] = u`.
+    - Closing cycle: In `full_mask = (1 << n) - 1`, locate an endpoint `u` with `friends[u][0] == True`, then backtrack predecessors to recover the circular seating.
 - **Complexity:**
-  - Time: `O(n^2 * 2^n)` bitmask operations for DP (or `O(n^2)` for $n > 20$)
-  - Space: `O(2^n)` words for bitmask-compressed DP states
+  - Time: `O(n^2 * 2^n)`
+  - Space: `O(n * 2^n)`
 
 ## Running Demos and Tests
 
@@ -75,7 +75,7 @@ python3 main.py --task 2
 python3 main.py --task 5
 ```
 
-Run the full unit test suite:
+Run the unit tests:
 ```bash
 python3 -m unittest discover -s tests -v
 ```
