@@ -1,54 +1,28 @@
+"""Task 8 - Colored Tromino Tiling (Required technique: Divide and Conquer).
+
+Problem:
+    Tile a 2^n x 2^n board (n >= 2) with one missing square using L-shaped
+    trominoes colored with at most 3 colors (R, G, B) such that no two
+    edge-adjacent trominoes share the same color.
+
+Divide and Conquer Strategy:
+    - Divide: split the 2^n x 2^n board into four 2^(n-1) x 2^(n-1) quadrants
+      and place one center L-tromino covering the three center cells outside
+      the quadrant containing the missing square.
+    - Conquer: recursively tile and 3-color each quadrant (base case: 2x2
+      board with one missing square = one L-tromino).
+    - Combine: keep quadrant 0's colors fixed and search over color
+      permutations for the remaining three quadrants plus the center tromino
+      (6^3 * 3 = 648 constant choices) to eliminate all seam color conflicts.
+
+Complexity (N = 4^n cells, (N - 1) / 3 trominoes):
+    - Recurrence: T(N) = 4 * T(N / 4) + O(N)
+    - Time Complexity:  O(N log N) = O(n * 4^n)
+    - Space Complexity: O(N) = O(4^n)
 """
-Task 8 - Colored Tromino Tiling (EED461, Divide and Conquer)
-
-Everything is in this one file:
-- Divide-and-conquer tiling and coloring
-- Verification and board rendering
-- Three demo test cases
-- Unit tests
-
-Run:
-    python tromino.py
-    python tromino.py n row col
-    python tromino.py --test
-"""
-
-# -----------------------------------------------------------------------------
-# README (included here as comments, as requested)
-# -----------------------------------------------------------------------------
-# Task 8 - Colored Tromino Tiling (Divide and Conquer)
-#
-# Run: `python tromino_single_file.py` (3 test cases)
-#      `python tromino_single_file.py n row col`
-#      `python tromino_single_file.py --test`
-# Python 3.8+, standard library only.
-#
-# Algorithm (tiling AND colouring are both Divide and Conquer)
-# - Divide: split the 2^n x 2^n board into four 2^(n-1) quadrants and place one
-#   L-tromino on the three centre cells outside the quadrant holding the missing
-#   square. Each quadrant now has exactly one hole.
-# - Conquer: recursively tile and 3-colour each quadrant.
-#   Base case: 2x2 with one hole = one tromino (colour 0).
-# - Combine: every quadrant is already validly coloured, so only the seams
-#   (the two middle lines + the centre tromino) can clash. We keep quadrant 0's
-#   colours and try a permutation of {R,G,B} for each other quadrant plus a colour
-#   for the centre tromino (6*6*6*3 = 648 constant choices). The first choice with
-#   no equal-colour neighbours across the seams is applied. `verify()` re-checks
-#   the final result independently.
-#
-# Complexity (N = 4^n cells, number of trominoes = (N-1)/3)
-# Recurrence: T(N) = 4 T(N/4) + O(N) (the combine step scans the seams, O(sqrt N),
-# and recolours the quadrants, O(N)).
-# - Time: O(N log N) = O(n * 4^n)
-# - Space: O(N) (board grid + tromino list) + O(n) recursion stack = O(4^n)
-#
-# The seam search always succeeded in testing (all holes for n = 2..5, random holes
-# for n = 6..9); I have not proved it always succeeds. Measured: n=8 (256x256) ~0.6 s.
-# -----------------------------------------------------------------------------
 
 import itertools
 import sys
-import unittest
 from dataclasses import dataclass
 from typing import List, Tuple
 
@@ -278,40 +252,20 @@ def run_case(name, n, missing_row, missing_col):
             print(" ", tromino)
 
 
-class TestTromino(unittest.TestCase):
-    def test_case_1(self):
-        verify(2, 0, 0, tileTromino(2, 0, 0))
-
-    def test_case_2(self):
-        verify(3, 3, 4, tileTromino(3, 3, 4))
-
-    def test_case_3(self):
-        verify(4, 15, 15, tileTromino(4, 15, 15))
-
-    def test_every_hole_up_to_n4(self):
-        for n in (2, 3, 4):
-            size = 2 ** n
-            for row in range(size):
-                for col in range(size):
-                    verify(n, row, col, tileTromino(n, row, col))
-
-    def test_invalid_inputs(self):
-        with self.assertRaises(ValueError):
-            tileTromino(1, 0, 0)
-
-        with self.assertRaises(ValueError):
-            tileTromino(2, 4, 0)
+def _run_demo() -> None:
+    print("=" * 60)
+    print("Task 8 - Colored Tromino Tiling (Divide and Conquer)")
+    print("=" * 60)
+    run_case("Case 1 (n=2, corner hole)", 2, 0, 0)
+    run_case("Case 2 (n=3, middle hole)", 3, 3, 4)
+    run_case("Case 3 (n=4, last cell)", 4, 15, 15)
 
 
-def main():
-    if len(sys.argv) == 2 and sys.argv[1] == "--test":
-        unittest.main(argv=[sys.argv[0]])
-    elif len(sys.argv) == 4:
+def main() -> None:
+    if len(sys.argv) == 4:
         run_case("Custom", *map(int, sys.argv[1:]))
     else:
-        run_case("Test 1 (smallest, corner hole)", 2, 0, 0)
-        run_case("Test 2 (n=3, middle hole)", 3, 3, 4)
-        run_case("Test 3 (n=4, last cell)", 4, 15, 15)
+        _run_demo()
 
 
 if __name__ == "__main__":

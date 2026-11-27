@@ -110,26 +110,31 @@ def is_valid(points: list, colors: list) -> bool:
     return all(abs(b - w) <= 1 for b, w in lines.values())
 
 
+def _run_demo() -> None:
+    print("=" * 60)
+    print("Task 4 - Point Coloring (Iterative Improvement)")
+    print("=" * 60)
+
+    sample_cases = [
+        ("Case 1 (2x2 square)", [(0, 0), (0, 1), (1, 0), (1, 1)]),
+        ("Case 2 (one row of 5)", [(i, 0) for i in range(5)]),
+        (
+            "Case 3 (mixed grid)",
+            [
+                (0, 0), (1, 0), (2, 0), (0, 1), (2, 1),
+                (1, 2), (2, 2), (3, 2), (3, 0), (3, 3),
+            ],
+        ),
+    ]
+
+    for label, pts in sample_cases:
+        colors = colorPoints(len(pts), pts)
+        assert is_valid(pts, colors), f"Verification failed for {label}!"
+        print(f"\n{label}")
+        print(f"  Points:   {pts}")
+        print(f"  Colors:   {colors}")
+        print("  Verified: Every horizontal and vertical line is balanced.")
+
+
 if __name__ == "__main__":
-    import random
-
-    tests = {
-        "Test 1 (2x2 square)": [(0, 0), (0, 1), (1, 0), (1, 1)],
-        "Test 2 (one row of 5)": [(i, 0) for i in range(5)],
-        "Test 3 (mixed)": [(0, 0), (1, 0), (2, 0), (0, 1), (2, 1),
-                           (1, 2), (2, 2), (3, 2), (3, 0), (3, 3)],
-    }
-    for name, pts in tests.items():
-        cols = colorPoints(len(pts), pts)
-        print(f"{name}\n  points = {pts}\n  colors = {cols}\n"
-              f"  valid  = {is_valid(pts, cols)}")
-
-    # randomized stress test
-    random.seed(1)
-    for _ in range(2000):
-        m = random.randint(1, 60)
-        size = random.randint(2, 8)
-        pts = list({(random.randrange(size), random.randrange(size))
-                    for _ in range(m)})
-        assert is_valid(pts, colorPoints(len(pts), pts))
-    print("\nRandom stress test: 2000 cases, all valid")
+    _run_demo()

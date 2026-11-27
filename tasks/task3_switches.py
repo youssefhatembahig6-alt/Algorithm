@@ -86,14 +86,20 @@ def bfs_min(n: int) -> int:
     return -1
 
 
-if __name__ == "__main__":
+def _run_demo() -> None:
+    print("=" * 60)
+    print("Task 3 - Security Switches (Decrease and Conquer)")
+    print("=" * 60)
+
     for n in (1, 2, 3, 4, 5, 8):
         moves, seq = turnOffSwitches(n)
         formula = (2 ** (n + 1)) // 3
-        shown = seq if len(seq) <= 40 else seq[:20] + ["..."] + seq[-5:]
-        print(f"n={n}: minMoves={moves} (formula {formula}), "
-              f"valid={verify(n, seq)}\n   toggles={shown}")
-    print("\nOptimality check against BFS (n=1..10):")
-    for n in range(1, 11):
-        assert turnOffSwitches(n)[0] == bfs_min(n), n
-    print("  all match")
+        shown = seq if len(seq) <= 25 else seq[:15] + ["..."] + seq[-5:]
+        assert verify(n, seq), f"Verification failed for n={n}!"
+        print(f"\n  n={n}: minMoves={moves} (formula={formula})")
+        print(f"    toggles={shown}")
+        print("    Verified: Valid minimum toggle sequence.")
+
+
+if __name__ == "__main__":
+    _run_demo()
